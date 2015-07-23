@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2013 Laurent Bovet <laurent.bovet@windmaster.ch>
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Docson demo</title>
+    <link rel="stylesheet" href="../docson/css/docson.css">
+    <script src="../docson/lib/require.js"></script>
+    <script>
+        require.config({ baseUrl: "../docson"});
+        require(["docson", "lib/jquery"], function(docson) {
+            var appURL = "http://localhost:3010/schemas/";
+            
+            docson.templateBaseUrl="../docson/templates";
+            
+            $("#btnText").click(function() {
+                var jsonSchema = $("#schemaText").val();
+                var schemaTextBaseURL = $("#schemaTextBaseURL").val();
+                if (schemaTextBaseURL && schemaTextBaseURL.trim()) {
+                    docson.doc("doc", jsonSchema, null, schemaTextBaseURL);
+                } else {
+                    docson.doc("doc", jsonSchema);
+                }
+            });
+            $("#btnURL").click(function() {
+                var url = $("#schemaURL").val();
+                $.get($("#schemaURL").val()).done(function(schema){
+                    // base URL calculated like in dockson application index.html
+                    console.log(url.replace(/\/[^\/]*\/?$/, '/'));
+                    docson.doc("doc", schema,  null, url.replace(/\/[^\/]*\/?$/, '/'));
+                });
+            });
+            
+            $("a").click(function(event) {
+                var schemaURLPart = $(event.currentTarget).text();
+                if ($(event.currentTarget).hasClass("reference")) {
+                    // schema is on the data anchor
+                    schemaURLPart = $(event.currentTarget).parent().children("a.data").text();
+                    $("#schemaText").val('{"$ref":"' + schemaURLPart + '"}');
+                    $("#schemaTextBaseURL").val(appURL);
+                } else if ($(event.currentTarget).hasClass("refWithId")) {
+                    schemaURLPart = $(event.currentTarget).parent().children("a.data").text();
+                    $("#schemaText").val('{"id":"' + appURL + '" ,"$ref":"' + schemaURLPart + '"}');
+                    $("#schemaTextBaseURL").val(appURL);
+                } else {
+                    $.get(appURL + schemaURLPart).done(function(schema) {
+                        $("#schemaText").val(JSON.stringify(schema));
+                        $("#schemaTextBaseURL").val(appURL);
+                    });
+                }
+                
+                $("#schemaURL").val(appURL + schemaURLPart);
+            });
+            
+//            $( document ).ready( function() {
+//                var schemaExample = {
+//                    $ref: "mymodule/homeless.json"
+//                };
+//                $("#schemaText").val(JSON.stringify(schemaExample));
+//                $("#schemaTextBaseURL").val(appURL);
+//                $("#schemaURL").val("http://localhost:3010/schemas/mymodule/homeless.json");
+//            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Models (click to switch)</h1>
+    <ul>
+        <li><a href="#" class="data">mymodule/homeless.json</a>&nbsp<a href="#" class="reference">ref</a>&nbsp<a href="#" class="refWithId">refWithId</a></li>
+        <li><a href="#" class="data">mymodule/address.json</a>&nbsp<a href="#" class="reference">ref</a>&nbsp<a href="#" class="refWithId">refWithId</a></li>
+        <li><a href="#" class="data">mymodule/person.json</a>&nbsp<a href="#" class="reference">ref</a>&nbsp<a href="#" class="refWithId">refWithId</a></li>
+    </ul>
+    <div id="form">
+        <h1>From Text</h1>
+        <label>Enter valid schema below</label>
+        <br />
+        <textarea id="schemaText" rows="10" cols="80">
+        </textarea>
+        <br />
+        <label>Base URL for schema rendering (leave empty for NONE)</label>
+        <input type="text" id="schemaTextBaseURL"></input>
+        <br/>
+        <button id="btnText">Load from schema</button>
+        <h1>From URL</h1>
+        <label>Schema URL</label>
+        <input type="text" id="schemaURL"></input>
+        <br/>
+        <label>Base URL for schema URL rendering (leave empty for DEFAULT)</label>
+        <input type="text" id="schemaURLBaseURL"></input>
+        <br/>
+        <button id="btnURL">Load from URL</button>
+    </div>
+    <hr/>
+    <div id="doc"></div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "simplified definition of an address",
+    "type": "object",
+    "required": ["street", "city", "postalcode"],
+    "properties": {
+        "number": {
+            "type": "integer",
+            "description": "number in the street"
+        },
+        "street": {
+            "type": "string",
+            "description": "the name of the street"
+        },
+        "city": {
+            "type": "string",
+            "description": "the name of the city"
+        },
+        "postalcode": {
+            "type": "integer",
+            "description": "the postal code of the city"
+        }
+    }
+}
