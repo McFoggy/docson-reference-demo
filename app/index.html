@@ -23,7 +23,7 @@
     <script>
         require.config({ baseUrl: "../docson"});
         require(["docson", "lib/jquery"], function(docson) {
-            var appURL = "http://localhost:3010/schemas/";
+            var appURL = location.href.replace('app/index.html', '');
             
             docson.templateBaseUrl="../docson/templates";
             
