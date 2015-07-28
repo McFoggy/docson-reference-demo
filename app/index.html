@@ -23,7 +23,8 @@
     <script>
         require.config({ baseUrl: "../docson"});
         require(["docson", "lib/jquery"], function(docson) {
-            var appURL = location.href.replace('app/index.html', '');
+            var appURL = location.href.replace('app/index.html', 'schemas/');
+            // var appURL = 'https://mcfoggy.github.io/docson-reference-demo/schemas/';
             
             docson.templateBaseUrl="../docson/templates";
             
